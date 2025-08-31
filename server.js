@@ -1,0 +1,33 @@
+const express = require("express");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/userRoutes");
+const contactRoutes = require('./routes/contactRoutes');
+const newsRoutes = require('./routes/newsRoutes');
+const donationRoutes = require('./routes/donationRoutes');
+const newsSubmissionRoutes = require('./routes/newsSubmissionRoutes');
+const volunteerRoutes = require('./routes/volunteerRoutes');
+const internRoutes = require('./routes/internRoutes');
+const collaborationRoutes = require('./routes/collaborationRoutes');
+const contactUsRoutes = require('./routes/contactUsRoutes');
+const mediaRoutes = require('./routes/mediaRoutes');
+dotenv.config();
+connectDB();
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+app.use("/api/auth", authRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/newsletter', newsRoutes);
+app.use('/api/donation', donationRoutes);
+app.use('/api/news', newsSubmissionRoutes);
+app.use('/api/volunteer', volunteerRoutes);
+app.use('/api/collaborate', collaborationRoutes);
+app.use('/api/intern', internRoutes);
+app.use('/api/contactus', contactUsRoutes);
+app.use('/api/media', mediaRoutes);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
