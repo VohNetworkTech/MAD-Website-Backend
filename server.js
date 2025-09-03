@@ -12,6 +12,7 @@ const internRoutes = require('./routes/internRoutes');
 const collaborationRoutes = require('./routes/collaborationRoutes');
 const contactUsRoutes = require('./routes/contactUsRoutes');
 const mediaRoutes = require('./routes/mediaRoutes');
+const eventRegistrationRoutes = require('./routes/eventRegistrationRoutes');
 dotenv.config();
 connectDB();
 
@@ -29,5 +30,6 @@ app.use('/api/collaborate', collaborationRoutes);
 app.use('/api/intern', internRoutes);
 app.use('/api/contactus', contactUsRoutes);
 app.use('/api/media', mediaRoutes);
+app.use('/api/event', eventRegistrationRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
