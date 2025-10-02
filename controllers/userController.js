@@ -153,7 +153,8 @@ exports.signup = async (req, res) => {
       name, 
       email, 
       phoneNumber: phoneValidation.cleanPhone, 
-      password 
+      password , 
+      role: "user" // Default role
     });
     
     res.json({
@@ -161,6 +162,7 @@ exports.signup = async (req, res) => {
       name: user.name,
       email: user.email,
       phoneNumber: user.phoneNumber,
+      role : user.role,
       token: generateToken(user.id),
     });
   } catch (err) {
@@ -197,6 +199,7 @@ exports.login = async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      role : user.role,
       token: generateToken(user.id),
     });
   } catch (err) {
@@ -275,3 +278,54 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ message: "Error sending reset email" });
   }
 };
+
+// You need to create this endpoint in your auth controller
+exports.getAllUsers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, role, search } = req.query;
+    
+    const query = {};
+    
+    // Filter by role
+    if (role && ['user', 'admin'].includes(role)) {
+      query.role = role;
+    }
+    
+    // Search functionality
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phoneNumber: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const users = await User.find(query)
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .select('-password'); // Never send passwords
+
+    const total = await User.countDocuments(query);
+
+    const stats = {
+      total: await User.countDocuments(),
+      admins: await User.countDocuments({ role: 'admin' }),
+      users: await User.countDocuments({ role: 'user' })
+    };
+
+    res.json({
+      success: true,
+      data: users,
+      stats,
+      pagination: {
+        current: page,
+        pages: Math.ceil(total / limit),
+        total
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+

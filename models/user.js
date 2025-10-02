@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phoneNumber: { type: Number, required: true },
   password: { type: String, required: true },
+  role: { 
+    type: String, 
+    enum: ["user", "admin"], // Restrict to only these values
+    default: "user" 
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 }, { timestamps: true });
